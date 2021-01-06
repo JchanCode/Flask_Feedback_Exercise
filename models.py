@@ -1,6 +1,7 @@
 from enum import unique
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
+from sqlalchemy.orm import backref
 
 db = SQLAlchemy()
 
@@ -45,3 +46,14 @@ class User(db.Model):
             return authenticated_user
         else:
             return False
+
+class Feedback(db.Model):
+    __tablename__ = "feedbacks"
+
+    id = db.Column(db.Integer, primary_key=True,
+                   unique=True, autoincrement=True)
+    title = db.Column(db.String(100), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    username = db.Column(db.String, db.ForeignKey("users.username"))
+
+    users = db.relationship("User", backref="feedbacks")
