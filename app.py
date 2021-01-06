@@ -75,3 +75,10 @@ def secret():
         flash("Please Log in", "danger")
         return redirect("/login")
     return render_template("secret.html")
+
+
+@app.route("/logout")
+def logout():
+    session.pop("username")
+    flash("Goodbye!","primary")
+    return redirect("/")
