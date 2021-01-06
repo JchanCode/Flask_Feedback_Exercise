@@ -43,7 +43,7 @@ def register():
         flash("Welcome! Successfully Created Your Account!","success")
 
         session["username"] = user.username
-        return redirect("/secret")
+        return redirect(f"/users/{user.username}")
 
     return render_template("register.html",form=form)
 
@@ -61,7 +61,7 @@ def login():
 
         if user:
             session["username"] = user.username
-            return redirect("/secret")
+            return redirect(f"/users/{user.username}")
         else:
             form.username.errors = ["Invalid username/password"]
 
@@ -69,16 +69,20 @@ def login():
 
 
 
-@app.route("/secret")
-def secret():
+@app.route("/users/<username>")
+def secret(username):
+    """Check session for username. Render User page"""
     if "username" not in session:
         flash("Please Log in", "danger")
         return redirect("/login")
-    return render_template("secret.html")
+
+    user = User.query.filter_by(username=username).first()
+
+    return render_template("secret.html", user=user)
 
 
 @app.route("/logout")
 def logout():
     session.pop("username")
-    flash("Goodbye!","primary")
+    flash("You've logged out!","primary")
     return redirect("/")
