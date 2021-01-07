@@ -25,6 +25,7 @@ class User(db.Model):
     email = db.Column(db.String(50), nullable=False, unique=True)
     first_name = db.Column(db.String(30), nullable=False)
     last_name = db.Column(db.String(30), nullable=False)
+    feedbacks = db.relationship("Feedback", backref="users", cascade="all, delete-orphan")
 
     @classmethod
     def register(cls, username, password,email,first_name,last_name):
@@ -47,6 +48,7 @@ class User(db.Model):
         else:
             return False
 
+
 class Feedback(db.Model):
     __tablename__ = "feedbacks"
 
@@ -54,6 +56,10 @@ class Feedback(db.Model):
                    unique=True, autoincrement=True)
     title = db.Column(db.String(100), nullable=False)
     content = db.Column(db.Text, nullable=False)
-    username = db.Column(db.String, db.ForeignKey("users.username"))
+    username = db.Column(db.String, db.ForeignKey("users.username", ondelete="CASCADE"))
 
-    users = db.relationship("User", backref="feedbacks")
+    @classmethod
+    def submit(cls, title, content, username):
+        """create new feedback"""
+
+        return cls(title=title, content=content, username=username)
