@@ -36,6 +36,10 @@ toolbar = DebugToolbarExtension(app)
 @app.route("/")
 def home():
     """redirect to register"""
+
+    if "username" in session:
+        return redirect(f"/users/{session['username']}")
+
     return redirect("/register")
 
 
@@ -43,15 +47,20 @@ def home():
 def login():
     """Handle login form"""
 
+    if "username" in session:
+        flash("You already login")
+        return redirect(f"/users/{session['username']}")
+
     form = LoginForm()
     if form.validate_on_submit():
         username = form.username.data
         password = form.password.data
-
+        
         user = User.authenticate(username, password)
 
         if user:
             session["username"] = user.username
+            session["is_admin"] = user.is_admin
             return redirect(f"/users/{user.username}")
         else:
             form.username.errors = ["Invalid username/password"]
@@ -77,6 +86,10 @@ def logout():
 @app.route("/register", methods=["POST", "GET"])
 def register():
     """handle register form"""
+
+    if "username" in session:
+        flash("please logout before registering a new account")
+        return redirect(f"/users/{session['username']}")
 
     form = UserForm()
     if form.validate_on_submit():
@@ -106,6 +119,12 @@ def secret(username):
 
         flash("Please Log In", "danger")
         return redirect("/login")
+
+    if session["is_admin"]:
+        admin = User.query.filter_by(username=username).first()
+        all_users = User.query.all()
+        all_feedbacks = Feedback.query.all()
+        return render_template("admin.html",users=all_users,feedbacks=all_feedbacks,admin=admin)
 
     user = User.query.filter_by(username=username).first()
     feedbacks = Feedback.query.filter_by(username=username).all()
@@ -199,4 +218,14 @@ def feedback_delete(feedback_id):
         return redirect(f"/users/{feedback.username}")
             
 
+"""
 
+                                Error Pages
+
+"""
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    """404 page"""
+    return render_template("404.html"), 404

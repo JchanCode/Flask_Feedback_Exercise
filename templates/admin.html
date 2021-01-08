@@ -1,0 +1,64 @@
+{% extends "base.html"%}
+
+{% block title%}Boss Page{% endblock %}
+
+
+{% block content %}
+
+
+<h2 class="text-center">Welcome Back {{admin.first_name|upper}}</h2>
+<div class="container">
+     <ul class="list-group list-group-flush">   
+        <li class="list-group-item">First Name: {{admin.first_name}}</li>
+        <li class="list-group-item">Last Name: {{admin.last_name}}</li>
+        <li class="list-group-item">Email: {{admin.email}}</li>        
+    </ul>
+</div>
+<br>
+<div class="container">
+        <div class="row">
+            <h5 class="col mt-3" >Users <span class="badge badge-pill badge-info display-4">{{users|count}}</span></h5>
+        </div>
+
+        <div class="list-group">
+        {% for user in users %}
+            <div class="list-group-item list-group-item-action flex-column align-items-start">
+                <div class="d-flex w-100 justify-content-between row">
+                    <h5 class="col-12 mb-1">{{user.first_name}} {{user.last_name}}</h5>
+                    <div class="col"></div>
+                </div>
+                <small class="mb-1">{{user.email}}</small>
+            </div>
+        {% endfor %}
+        </div>
+</div>
+<br>
+<div class="container">
+<!-- Feedback header / Add Link -->
+    <div class="row">
+        <h5 class="col mt-3" >Feedbacks <span class="badge badge-pill badge-info display-4">{{feedbacks|count}}</span></h5>
+ 
+        <a style="font-size: 2rem;" class="col-2 p-0 m-0 mt-1" href="/users/{{admin.username}}/feedback/add"><span  class="badge p-0 m-0">+ Add</span></a>
+  
+    </div>
+<!-- Feedback's title/content container -->
+    <div class="list-group">
+    {% for feedback in feedbacks %}
+        <div class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-between row">
+                <h5 class="col-12 mb-1">{{feedback.title}}</h5>
+                <a class="col-1 btn btn-outline-info btn-sm border-0 ml-1" href="/feedback/{{feedback.id}}/update">Edit</a>
+                <form class="col-1" action='/feedback/{{feedback.id}}/delete'  method="POST">
+                    <button type="submit" class="btn btn-outline-danger btn-sm border-0 ">Delete</button>
+                </form>
+                <div class="col"></div>
+            </div>
+            <p class="mb-1">{{feedback.content}}</p>
+        </div>
+    {% endfor %}
+    </div>
+</div>
+
+
+
+{% endblock %}
