@@ -115,7 +115,7 @@ def register():
 @app.route("/users/<username>")
 def secret(username):
     """Check session for username. Render User page"""
-    import pdb; pdb.set_trace()
+    
     if "username" not in session:
         flash("Please Log In", "danger")
         return redirect("/login")
