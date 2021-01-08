@@ -72,6 +72,7 @@ def logout():
     """logout user and pop session"""
 
     session.pop("username")
+    session.pop("is_admin")
     flash("You've logged out!", "primary")
     return redirect("/")
 
@@ -114,13 +115,12 @@ def register():
 @app.route("/users/<username>")
 def secret(username):
     """Check session for username. Render User page"""
-
+    import pdb; pdb.set_trace()
     if "username" not in session:
-
         flash("Please Log In", "danger")
         return redirect("/login")
 
-    if session["is_admin"]:
+    if session["is_admin"] == True:
         admin = User.query.filter_by(username=username).first()
         all_users = User.query.all()
         all_feedbacks = Feedback.query.all()
